@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.gatechvip.btap.summer17clean.HomeActivity"
+    tools:layout_editor_absoluteY="81dp"
+    tools:layout_editor_absoluteX="0dp">
+
+    <ImageButton
+        android:id="@+id/btnOne"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="106dp"
+        android:background="@drawable/btn_one" />
+
+    <ImageButton
+        android:id="@+id/btnTwo"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@drawable/btn_two"
+        android:layout_marginTop="75dp"
+        android:layout_below="@+id/btnOne"
+        android:layout_alignStart="@+id/btnOne" />
+
+    <Button
+        android:id="@+id/btnClinician"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:background="@android:color/holo_blue_light"
+        android:text="Clinician"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/tvWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/title_no_id"
+        android:textColor="@color/colorWarning"
+        android:textSize="18sp"
+        android:layout_alignBaseline="@+id/btnClinician"
+        android:layout_alignBottom="@+id/btnClinician"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

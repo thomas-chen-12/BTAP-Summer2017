@@ -1,0 +1,33 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <MultiSelectListPreference
+        android:defaultValue="@array/naming_difficulty_default_values"
+        android:key="@string/pref_naming_difficulty_selected_key"
+        android:entries="@array/naming_difficulty_entries"
+        android:entryValues="@array/naming_difficulty_values"
+        android:title="@string/pref_title_naming_difficulty"
+        />
+
+    <!-- NOTE: EditTextPreference accepts EditText attributes. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/pref_default_naming_question_amount"
+        android:inputType="number"
+        android:key="@string/pref_naming_question_amount_key"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_naming_question_amount" />
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="@string/pref_default_naming_timer"
+        android:inputType="number"
+        android:key="@string/pref_naming_timer_key"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="@string/pref_title_naming_timer" />
+
+</PreferenceScreen>

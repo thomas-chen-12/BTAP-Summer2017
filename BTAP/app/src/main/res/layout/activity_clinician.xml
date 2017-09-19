@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.gatechvip.btap.summer17clean.ClinicianActivity">
+
+    <Button
+        android:id="@+id/btnModuleSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@android:color/holo_blue_light"
+        android:paddingEnd="6dp"
+        android:paddingStart="6dp"
+        android:text="Module Settings"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btnSetUpDropbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="14dp"
+        android:background="@android:color/holo_blue_light"
+        android:paddingEnd="6dp"
+        android:paddingStart="6dp"
+        android:text="Set Up Dropbox"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false" />
+
+    <Button
+        android:id="@+id/btnSetID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAllCaps="false"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="13dp"
+        android:background="@android:color/holo_blue_light"
+        android:paddingEnd="6dp"
+        android:paddingStart="6dp"
+        android:text="Set Subject ID"
+        android:textColor="#FFFFFF"/>
+</RelativeLayout>

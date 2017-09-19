@@ -1,0 +1,79 @@
+<resources>
+    <string name="app_name">BTAP</string>
+
+    <!--Shared Preference Keys-->
+    <string name="preference_subject_id_file_key">com.gatechvip.btap.summer17clean.SUBJECT_ID_FILE</string>
+    <string name="preference_subject_id_key">CURRENT_SUBJECT</string>
+
+    <string name="preference_asked_questions_file_key">com.gatechvip.btap.summer17clean.ASKED_QUESTIONS_FILE</string>
+    <string name="preference_asked_mono_hi_key">asked_monosyllabic_high_frequency</string>
+    <string name="preference_asked_mono_lo_key">asked_monosyllabic_low_frequency</string>
+    <string name="preference_asked_bi_hi_key">asked_bisyllabic_high_frequency</string>
+    <string name="preference_asked_bi_lo_key">asked_bisyllabic_lo_frequency</string>
+    <string name="preference_asked_multi_key">asked_multisyllabic</string>
+
+    <string name="pref_naming_question_amount_key">naming_question_amount</string>
+    <string name="pref_naming_difficulty_selected_key">naming_difficulty_selected</string>
+    <string name="pref_naming_timer_key">naming_timer</string>
+    
+    <string name="preference_dropbox_pref_file_key">com.gatechvip.btap.summer17clean.DROPBOX_PREF_FILE</string>
+    <string name="preference_dropbox_access_token_key">access_token</string>
+    <string name="preference_dropbox_was_last_upload_successful">was_last_upload_successful</string>
+    <string name="preference_dropbox_last_upload_time">last_upload_time</string>
+
+
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to home activity -->
+    <string name="title_welcome">Welcome</string>
+    <string name="title_no_id">No User ID Assigned</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="title_activity_module_settings">Module Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Naming settings -->
+    <string name="pref_header_naming">Naming</string>
+
+    <string-array name="naming_difficulty_entries">
+        <item>Monosyllabic &amp; High Frequency</item>
+        <item>Monosyllabic &amp; Low Frequency </item>
+        <item>Bisyllabic &amp; High Frequency </item>
+        <item>Bisyllabic &amp; Low Frequency </item>
+        <item>Multisyllabic &amp; Any Frequency </item>
+    </string-array>
+    <string-array name="naming_difficulty_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="naming_difficulty_paths">
+        <item>NamingStimuli/Monosyllabic/HighFreq</item>
+        <item>NamingStimuli/Monosyllabic/LowFreq</item>
+        <item>NamingStimuli/Bisyllabic/HighFreq</item>
+        <item>NamingStimuli/Bisyllabic/LowFreq</item>
+        <item>NamingStimuli/Multisyllabic</item>
+    </string-array>
+    <string-array name="naming_difficulty_default_values">
+        <item>0</item>
+    </string-array>
+    <string name="pref_title_naming_difficulty">Difficulty</string>
+
+    <string name="pref_title_naming_question_amount">Number of Questions</string>
+    <string name="pref_default_naming_question_amount">20</string>
+
+    <string name="pref_title_naming_timer">Timer</string>
+    <string name="pref_default_naming_timer">30</string>
+
+    <!-- Strings related to Dropbox -->
+    <string name="APP_KEY">DELETED FOR GITHUB PUSH</string>
+</resources>
