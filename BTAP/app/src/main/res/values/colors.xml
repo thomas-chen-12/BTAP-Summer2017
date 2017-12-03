@@ -6,4 +6,7 @@
 
     <color name="colorWarning">#CE491C</color>
     <color name="colorBlack">#000000</color>
+    
+    <color name="buttonOneBlue">#4ABAFF</color>
+    <color name="buttonTwoPurple">#A54AFF</color>
 </resources>

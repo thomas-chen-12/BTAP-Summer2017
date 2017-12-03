@@ -88,7 +88,8 @@ public class HomeActivity extends AppCompatActivity {
             scriptDescriptor = getAssets().openFd(scriptFilename);
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(context, scriptFilename + " does not exist", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, scriptFilename + " does not exist", Toast.LENGTH_SHORT)
+                    .show();
         }
 
         // Instantiate View Objects
@@ -170,6 +171,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    // This method checks if the app currently has storage permission granted
     private boolean hasStoragePermission() {
         int storagePermissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -177,12 +179,16 @@ public class HomeActivity extends AppCompatActivity {
         return (storagePermissionCheck == PackageManager.PERMISSION_GRANTED);
     }
 
+    // This method checks if the app currently has audio recording permission granted
     private boolean hasRecordAudioPermission() {
         int audioPermissionCheck = ContextCompat.checkSelfPermission(this,
                 Manifest.permission.RECORD_AUDIO);
         return (audioPermissionCheck == PackageManager.PERMISSION_GRANTED);
     }
 
+    /* The following two method ask for permissions. If a permission has been denied before, it
+     * will show a dialog explaining why the permission is necessary
+     */
     private void askStoragePermission(final int requestCode) {
         // Should we show an explanation?
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
@@ -213,7 +219,7 @@ public class HomeActivity extends AppCompatActivity {
     private void askRecordAudioPermission(final int requestCode) {
         // Should we show an explanation?
         if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                Manifest.permission.RECORD_AUDIO)) {
             AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
             alertBuilder.setCancelable(true);
             alertBuilder.setTitle("Permission Necessary");
@@ -223,7 +229,7 @@ public class HomeActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     ActivityCompat.requestPermissions((Activity) context,
-                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                            new String[]{Manifest.permission.RECORD_AUDIO},
                             requestCode);
                 }
             });

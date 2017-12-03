@@ -75,5 +75,5 @@
     <string name="pref_default_naming_timer">30</string>
 
     <!-- Strings related to Dropbox -->
-    <string name="APP_KEY">DELETED FOR GITHUB PUSH</string>
+    <string name="APP_KEY">USE YOUR OWN APP KEY HERE</string>
 </resources>

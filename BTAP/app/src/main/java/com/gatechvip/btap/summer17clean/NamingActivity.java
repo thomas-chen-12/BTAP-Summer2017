@@ -2,12 +2,18 @@ package com.gatechvip.btap.summer17clean;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaRecorder;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,26 +26,55 @@ import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Set;
 
-public class NamingActivity extends AppCompatActivity {
+public class NamingActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
     // Parameters from settings
     private String curSubjectID, folderPath;
     private int numQuestions, timer, curQuestion, numHintsPressed;
     private String ACCESS_TOKEN;
+
+    // Private fields related to timer
+    private long startTime = 0;
+    private Handler timerHandler = new Handler();
+    private Runnable updateTimerThread = new Runnable() {
+        @Override
+        public void run() {
+            long timeInMilliseconds = System.currentTimeMillis() - startTime;
+
+            timeInMilliseconds=(timer)*1000-timeInMilliseconds;
+            int seconds = (int) (timeInMilliseconds / 1000);
+            seconds = seconds % 60;
+            int centiseconds = (int) (timeInMilliseconds % 1000) / 10;
+
+
+            if (seconds ==0 && centiseconds<1) {
+                nextQuestion();
+            }
+            else
+            {
+                timerHandler.postDelayed(this, 0);
+            }
+
+        }
+    };
 
     // Filters for file I/O
     private static FilenameFilter csvFilter = new FilenameFilter() {
@@ -63,17 +98,43 @@ public class NamingActivity extends AppCompatActivity {
     private ArrayList<String> picFilePaths;
     private ImageButton btnNext, btnHint;
     private ImageView ivPic;
-    private ListView lvTest; // TODO: TEST ONLY, remove when finished
 
     // Other Objects
+    private HashMap<String, String> questionCueMap;
+    private boolean isMapReady = false;
     private Date startingTime;
     private MediaRecorder recorder;
+    private TextToSpeech tts;
+    private boolean ttsInProgress = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_naming);
+
+        // Initialize TTS
+        tts = new TextToSpeech(this, this);
+        tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+            @Override
+            public void onStart(String s) {
+                ttsInProgress = true;
+            }
+
+            @Override
+            public void onDone(String s) {
+                // This boolean variable is used to prevent stupid user's excessive hacking of the
+                // hint button, which results in the same TTS code being executed numerous times.
+                ttsInProgress = false;
+            }
+
+            @Override
+            public void onError(String s) {
+                ttsInProgress = false;
+            }
+        });
+
         curQuestion = 0;
+        new LoadPhonemicCuesTask().execute();
 
         retrieveAccessToken();
 
@@ -92,19 +153,7 @@ public class NamingActivity extends AppCompatActivity {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (curQuestion < numQuestions-1) {
-                    curQuestion++;
-                    hintTimes.add(numHintsPressed);
-                    numHintsPressed = 0;
-                    showNextPicture();
-                    appendTimeStamp();
-                } else {
-                    hintTimes.add(numHintsPressed);
-                    stopRecording();
-                    saveTimeStamps();
-                    uploadFilesInThisFolderPath();
-                    finish();
-                }
+                nextQuestion();
             }
         });
 
@@ -113,14 +162,38 @@ public class NamingActivity extends AppCompatActivity {
         btnHint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                numHintsPressed++;
+                if (isMapReady && (!ttsInProgress) && (!tts.isSpeaking())) {
+                    numHintsPressed++;
+                    String question = getNameFromPath(picFilePaths.get(curQuestion));
+                    speak(questionCueMap.get(question));
+                }
             }
         });
 
-//        lvTest = (ListView) findViewById(R.id.lvTest);
-//        ArrayList<String> askedMonoLowQuestions = new ArrayList<>((getAskedQuestionsSet(1)));
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, askedMonoLowQuestions);
-//        lvTest.setAdapter(adapter);
+        timerHandler.postDelayed(updateTimerThread, 0);
+    }
+
+    private void nextQuestion() {
+        if (curQuestion < numQuestions-1) {
+            // Reset Timer
+            timerHandler.removeCallbacks(updateTimerThread);
+            startTime = System.currentTimeMillis();
+            timerHandler.postDelayed(updateTimerThread, 0);
+            // Record data and update pictures
+            curQuestion++;
+            hintTimes.add(numHintsPressed);
+            numHintsPressed = 0;
+            showNextPicture();
+            appendTimeStamp();
+        } else {
+            appendTimeStamp();
+            hintTimes.add(numHintsPressed);
+            stopRecording();
+            saveTimeStamps();
+            uploadFilesInThisFolderPath();
+            tts.shutdown();
+            finish();
+        }
     }
 
     private void retrieveSettings() {
@@ -154,7 +227,12 @@ public class NamingActivity extends AppCompatActivity {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         Set<String> difficultySelected = sharedPref.getStringSet(
                 getString(R.string.pref_naming_difficulty_selected_key),
-                new HashSet<String>(Arrays.asList(getResources().getStringArray(R.array.naming_difficulty_default_values))));
+                new HashSet<String>(
+                        Arrays.asList(getResources()
+                                .getStringArray(R.array.naming_difficulty_default_values)
+                        )
+                )
+        );
         String[] indices = difficultySelected.toArray(new String[difficultySelected.size()]);
         // The number of indexes indicates how many folders to look into
         String[] folderPaths = new String[indices.length];
@@ -247,7 +325,7 @@ public class NamingActivity extends AppCompatActivity {
             for (int i = 0; i < picFilePaths.size(); i++) {
                 String filename = getNameFromPath(picFilePaths.get(i));
                 String stamp = timeStamps.get(i).toString();
-                s += "Question #" + i + ", " +
+                s += "Question #" + (i+1) + ", " +
                         filename + ", " +
                         stamp + "s, " +
                         hintTimes.get(i) + " hint(s)\n";
@@ -287,7 +365,8 @@ public class NamingActivity extends AppCompatActivity {
             if (list.length > 0) {
                 // This is an actual folder
                 for (String path : list) {
-                    String[] filenamesInThisFolder = getFilenamesFromAssetFolder(folder + "/" + path);
+                    String[] filenamesInThisFolder =
+                            getFilenamesFromAssetFolder(folder + "/" + path);
                     Collections.addAll(toReturn, filenamesInThisFolder);
                 }
             } else {
@@ -368,9 +447,17 @@ public class NamingActivity extends AppCompatActivity {
             File[] filesToUpload = folder.listFiles();
             String folderName = folderPath.substring(folderPath.indexOf("BTAP"));
             for (File file : filesToUpload) {
-                new UploadTask(DropboxClient.getClient(ACCESS_TOKEN), file, folderName, getApplicationContext())
-                        .execute();
+                new UploadTask(DropboxClient.getClient(ACCESS_TOKEN), file,
+                        folderName, getApplicationContext()).execute();
             }
+        }
+    }
+
+    private void speak(String text) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
+        } else {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
         }
     }
 
@@ -378,5 +465,51 @@ public class NamingActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
+    }
+
+    @Override
+    public void onInit(int i) {
+        if (i == TextToSpeech.SUCCESS) {
+            tts.setLanguage(Locale.US);
+        }
+    }
+
+    private class LoadPhonemicCuesTask extends AsyncTask<Void, Void, HashMap<String, String>> {
+
+        @Override
+        protected HashMap<String, String> doInBackground(Void... voids) {
+            if (isMapReady) {
+                return questionCueMap;
+            }
+
+            HashMap<String, String> questionCuePairs = new HashMap<>();
+            AssetManager am = getAssets();
+            InputStream inputStream;
+            try {
+                inputStream = am.open("CNphon.csv");
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                try {
+                    String csvLine;
+                    while ((csvLine = reader.readLine()) != null) {
+                        String[] row = csvLine.split(",");
+                        questionCuePairs.put(row[0], row[1]);
+                    }
+                inputStream.close();
+                }
+                catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
+            return questionCuePairs;
+        }
+
+        @Override
+        protected void onPostExecute(HashMap<String, String> stringStringHashMap) {
+            questionCueMap = stringStringHashMap;
+            isMapReady = true;
+        }
     }
 }
